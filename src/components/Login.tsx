@@ -7,7 +7,8 @@ import CardContent from '@material-ui/core/CardContent';
 import CardActions from '@material-ui/core/CardActions';
 import CardHeader from '@material-ui/core/CardHeader';
 import Button from '@material-ui/core/Button';
-
+import  axios from 'axios';
+const  {API_ENDPOINT} = process.env;
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     container: {
@@ -48,6 +49,9 @@ const initialState:State = {
   helperText: '',
   isError: false
 };
+
+
+
 
 type Action = { type: 'setUsername', payload: string }
   | { type: 'setPassword', payload: string }
@@ -96,7 +100,7 @@ const reducer = (state: State, action: Action): State => {
 const Login = () => {
   const classes = useStyles();
   const [state, dispatch] = useReducer(reducer, initialState);
-
+ 
   useEffect(() => {
     if (state.username.trim() && state.password.trim()) {
      dispatch({
@@ -112,17 +116,21 @@ const Login = () => {
   }, [state.username, state.password]);
 
   const handleLogin = () => {
-    if (state.username === 'abc@email.com' && state.password === 'password') {
-      dispatch({
-        type: 'loginSuccess',
-        payload: 'Login Successfully'
-      });
-    } else {
-      dispatch({
-        type: 'loginFailed',
-        payload: 'Incorrect username or password'
-      });
-    }
+    console.log(`${API_ENDPOINT}`);
+    console.log(API_ENDPOINT);
+    axios.post('http://localhost:3000/auth/login', {"username" : state.username, "password" : state.password})
+        .then(response => 
+          dispatch({
+            type: 'loginSuccess',
+            payload: 'Login Successfully'
+          })
+        ).catch(error =>
+          dispatch({
+            type: 'loginFailed',
+            payload: 'Incorrect Credentials'
+          })
+          );
+   
   };
 
   const handleKeyPress = (event: React.KeyboardEvent) => {
