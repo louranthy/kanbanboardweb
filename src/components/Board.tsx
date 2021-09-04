@@ -8,13 +8,7 @@ import  axios from 'axios';
 import { useEffect } from 'react'
 import getTasks from '../services/tasks.services'
 
-// Import data for board
 
-
-// Import BoardColumn component
-
-
-// Create styles board element properties
 const BoardEl = styled.div`
   display: flex;
   align-items: flex-start;
@@ -60,6 +54,7 @@ const Board = () => {
         .then((res) => {
 
            initialState.tasks = res.data;
+          
         })
         .catch((err) => {
         
@@ -75,8 +70,10 @@ const Board = () => {
   const onDragEnd = (result: any) => {
     const { source, destination, draggableId } = result
 
-
-
+    console.log(source);
+    
+    console.log(destination);
+    console.log(draggableId);
     if (!destination) {
       return
     }
@@ -104,8 +101,7 @@ const Board = () => {
       newItemsIds.splice(destination.index, 0, draggableId)
 
       // Create new, updated, object with data for columns
-      console.log(columnFinish);
-      console.log(columnStart);
+   
       const newColumnStart = {
         ...columnStart,
         itemsIds: newItemsIds
@@ -170,7 +166,7 @@ const Board = () => {
 
             // Get item belonging to the current column
             const items = column.itemsIds.map((itemId: string) => (state.items as any)[itemId])
-
+            console.log(items)
             // Render the BoardColumn component
             return <BoardColumn key={column.id} column={column} items={items} />
           })}

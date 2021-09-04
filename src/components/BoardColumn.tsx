@@ -55,14 +55,13 @@ export const BoardColumn: React.FC<BoardColumnProps> = (props) => {
 
       <Droppable droppableId={props.column.id}>
         {(provided, snapshot) => (
-
           <BoardColumnContent
             {...provided.droppableProps}
             ref={provided.innerRef}
             isDraggingOver={snapshot.isDraggingOver}
           >
             {/* All board items belong into specific column. */}
-            {props.items.map((item: any, index: number) => <BoardItem key={item.id} item={item} index={index} />)}
+            {props.items.map((item: any, index: number) => <BoardItem key={item._id} item={item} index={index} />)}
             {provided.placeholder}
           </BoardColumnContent>
         )}
