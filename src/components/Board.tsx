@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import * as React from 'react'
 import { useState } from 'react'
 import { DragDropContext } from 'react-beautiful-dnd'
@@ -17,15 +19,14 @@ const BoardEl = styled.div`
 type State = {
   items : object,
   columns: object
-  columnsOrder : Array<string>,
-  tasks : object
+  columnsOrder : Array<string>
 }
 
 const initialState:State = initialBoardData;
 
 type Action = { type: 'setColumns', payload: object} |
 {type: 'setColumnStart', payload: Array<string>} |
-{type: 'setTasks', payload: object};
+{type: 'setItems', payload: object};
 
 const reducer = (state: State, action: Action): State => {
   switch (action.type) {
@@ -39,41 +40,62 @@ const reducer = (state: State, action: Action): State => {
         ...state,
         columns: action.payload
       };
-    case 'setTasks': 
+    case 'setItems': 
       return {
         ...state,
-        tasks: action.payload
-      };
+        items: action.payload
+    };
   }
 }
 
 
 const Board = () => {
-  const fetchData = () => {
-    getTasks()
-        .then((res) => {
-
-           initialState.tasks = res.data;
-          
-        })
-        .catch((err) => {
-        
-        });
-  };
-   useEffect(() => {
-        fetchData();
-    }, []);
-
 
   let [state, dispatch] = React.useReducer(reducer, initialState);
-   
+
+  useEffect(() => {
+    getTasks(); 
+  }, []);
+
+  const getTasks = () =>{
+    axios.get('http://localhost:3000/board/tasks')
+      .then((response) => {
+          const tasks = response.data;
+        
+          console.log(response.data);
+          let columns = [state.columns];
+          const newObject = {};
+          for (const key of Object.keys(response.data)) {
+            let newKey = response.data[key]['_id'];
+            delete Object.assign(newObject, response.data, {[newKey]: response.data[key] })[key];
+            delete response.data[key];
+        
+          }
+          dispatch({
+            type: 'setItems',
+            payload: newObject
+          })
+          for (const key of Object.keys(newObject)) {
+             if(newObject[key]['status'] == "To Do"){
+               columns[0]['column-todo'].itemsIds.push(key);
+             }else if (newObject[key]['status'] == "In Progress"){
+               columns[0]['column-inprogress'].itemsIds.push(key);
+             }else if (newObject[key]['status'] == "Done"){
+               columns[0]['column-done'].itemsIds.push(key);
+             }
+          }
+         
+            dispatch({
+              type: 'setColumns',
+              payload: columns[0]
+            })
+
+      });
+  }
+
   const onDragEnd = (result: any) => {
     const { source, destination, draggableId } = result
 
-    console.log(source);
-    
-    console.log(destination);
-    console.log(draggableId);
     if (!destination) {
       return
     }
@@ -166,7 +188,7 @@ const Board = () => {
 
             // Get item belonging to the current column
             const items = column.itemsIds.map((itemId: string) => (state.items as any)[itemId])
-            console.log(items)
+           
             // Render the BoardColumn component
             return <BoardColumn key={column.id} column={column} items={items} />
           })}

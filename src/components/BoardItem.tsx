@@ -5,7 +5,8 @@ import styled from 'styled-components'
 // Define types for board item element properties
 type BoardItemProps = {
   index: number
-  item: any
+  item: any,
+  columnId : string
 }
 
 // Define types for board item element style properties
@@ -42,7 +43,9 @@ export const BoardItem = (props: BoardItemProps) => {
         isDragging={snapshot.isDragging}
       >
         {}
-        {props.item.status}
+        {props.item.task}<p></p>
+        
+        <button>Start</button>
       </BoardItemEl>
     )}
   </Draggable>

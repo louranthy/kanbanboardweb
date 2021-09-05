@@ -61,7 +61,7 @@ export const BoardColumn: React.FC<BoardColumnProps> = (props) => {
             isDraggingOver={snapshot.isDraggingOver}
           >
             {/* All board items belong into specific column. */}
-            {props.items.map((item: any, index: number) => <BoardItem key={item._id} item={item} index={index} />)}
+            {props.items.map((item: any, index: number) => <BoardItem key={item._id} item={item} index={index} columnId={props.column.id} />)}
             {provided.placeholder}
           </BoardColumnContent>
         )}
