@@ -1,12 +1,10 @@
 // @ts-nocheck
 
 import * as React from 'react'
-import { useState } from 'react'
 import { DragDropContext } from 'react-beautiful-dnd'
 import styled from 'styled-components'
 import { initialBoardData } from '../data/initialBoardData'
 import { BoardColumn } from './BoardColumn'
-import  axios from 'axios';
 import { useEffect } from 'react'
 import getTasks from '../services/get.tasks.services'
 import updateTask from '../services/update.tasks.services'
