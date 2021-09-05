@@ -1,7 +1,6 @@
 // @ts-nocheck
 
 import * as React from 'react'
-import { useState } from 'react'
 import { DragDropContext } from 'react-beautiful-dnd'
 import styled from 'styled-components'
 import { initialBoardData } from '../data/initialBoardData'
