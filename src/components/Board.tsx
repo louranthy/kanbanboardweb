@@ -60,9 +60,6 @@ const Board = () => {
   const getTasks = () =>{
     axios.get('http://localhost:3000/board/tasks')
       .then((response) => {
-          const tasks = response.data;
-        
-          console.log(response.data);
           let columns = [state.columns];
           const newObject = {};
           for (const key of Object.keys(response.data)) {
@@ -89,13 +86,15 @@ const Board = () => {
               type: 'setColumns',
               payload: columns[0]
             })
+            console.log(initialState.items)
 
       });
   }
 
   const onDragEnd = (result: any) => {
     const { source, destination, draggableId } = result
-
+    console.log(source);
+    console.log(destination);
     if (!destination) {
       return
     }
@@ -177,6 +176,7 @@ const Board = () => {
   }
 
 
+
     return(
       <BoardEl>
         {/* Create context for drag & drop */}
@@ -190,11 +190,12 @@ const Board = () => {
             const items = column.itemsIds.map((itemId: string) => (state.items as any)[itemId])
            
             // Render the BoardColumn component
-            return <BoardColumn key={column.id} column={column} items={items} />
+            return <BoardColumn key={column.id} column={column} items={items} state={state} dispatch={dispatch}/>
           })}
         </DragDropContext>
       </BoardEl>
     )
 }
+
 
 export default Board;

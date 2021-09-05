@@ -11,6 +11,8 @@ type BoardColumnProps = {
   key: string,
   column: any,
   items: any,
+  state : any,
+  dispatch : any
 }
 
 // Define types for board column content style properties
@@ -61,7 +63,7 @@ export const BoardColumn: React.FC<BoardColumnProps> = (props) => {
             isDraggingOver={snapshot.isDraggingOver}
           >
             {/* All board items belong into specific column. */}
-            {props.items.map((item: any, index: number) => <BoardItem key={item._id} item={item} index={index} columnId={props.column.id} />)}
+            {props.items.map((item: any, index: number) => <BoardItem key={item._id} item={item} index={index} columnId={props.column.id} displayButton={props.column.displayButton} state={props.state} dispatch={props.dispatch}/>)}
             {provided.placeholder}
           </BoardColumnContent>
         )}
