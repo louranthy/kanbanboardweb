@@ -48,6 +48,7 @@ const BoardColumnContent = styled.div<BoardColumnContentStylesProps>`
 
 // Create and export the BoardColumn component
 export const BoardColumn: React.FC<BoardColumnProps> = (props) => {
+
   return(
     <BoardColumnWrapper>
       {/* Title of the column */}
