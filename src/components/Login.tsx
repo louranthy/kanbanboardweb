@@ -8,7 +8,7 @@ import CardActions from '@material-ui/core/CardActions';
 import CardHeader from '@material-ui/core/CardHeader';
 import Button from '@material-ui/core/Button';
 import  axios from 'axios';
-const  {API_ENDPOINT} = process.env;
+const  {REACT_APP_API_ENDPOINT} = process.env;
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     container: {
@@ -116,9 +116,7 @@ const Login = () => {
   }, [state.username, state.password]);
 
   const handleLogin = () => {
-    console.log(`${API_ENDPOINT}`);
-    console.log(API_ENDPOINT);
-    axios.post('http://localhost:3000/auth/login', {"username" : state.username, "password" : state.password})
+    axios.post(REACT_APP_API_ENDPOINT + 'auth/login', {"username" : state.username, "password" : state.password})
         .then(response => 
           dispatch({
             type: 'loginSuccess',

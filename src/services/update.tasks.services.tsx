@@ -1,7 +1,7 @@
 import  axios from 'axios';
-const  {API_ENDPOINT} = process.env;
+const  {REACT_APP_API_ENDPOINT} = process.env;
 const updateTask = (item : any) => {
-    return axios.put('http://localhost:3000/board/tasks', item).then(data => data);
+    return axios.put(REACT_APP_API_ENDPOINT+'board/tasks', item).then(data => data);
 }
 
 export default updateTask; 

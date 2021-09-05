@@ -55,7 +55,7 @@ export const BoardItem = (props: BoardItemProps) => {
   }
   const handleUpdate = (property : any) => {
     let item = property;
-    console.log(item.status)
+    
     if(item.status === "In Progress"){
       let finishedAt = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
       let startedAt = moment(item.startedAt).format('YYYY-MM-DD HH:mm:ss');
@@ -148,7 +148,6 @@ export const BoardItem = (props: BoardItemProps) => {
 
   function ShowTime(itemProp) {
     const item = itemProp;
-    console.log(item);
     if (item.status === "In Progress") {
       return  <button
       variant="contained"
