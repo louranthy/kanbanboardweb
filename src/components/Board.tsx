@@ -69,11 +69,11 @@ const Board = () => {
         payload: newObject
       })
       for (const key of Object.keys(newObject)) {
-         if(newObject[key]['status'] == "To Do"){
+         if(newObject[key]['status'] === "To Do"){
            columns[0]['column-todo'].itemsIds.push(key);
-         }else if (newObject[key]['status'] == "In Progress"){
+         }else if (newObject[key]['status'] === "In Progress"){
            columns[0]['column-inprogress'].itemsIds.push(key);
-         }else if (newObject[key]['status'] == "Done"){
+         }else if (newObject[key]['status'] === "Done"){
            columns[0]['column-done'].itemsIds.push(key);
          }
       }
@@ -82,7 +82,6 @@ const Board = () => {
           type: 'setColumns',
           payload: columns[0]
         })
-        console.log(initialState.items)
 
   }) 
   }, []);
@@ -158,8 +157,6 @@ const Board = () => {
       });
     }
   }
-
-
 
     return(
       <BoardEl>

@@ -5,7 +5,6 @@ import { Draggable } from 'react-beautiful-dnd'
 import styled from 'styled-components'
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { Button } from '@material-ui/core';
-import axios from 'axios';
 import moment from 'moment';
 import updateTask from '../services/update.tasks.services';
 
@@ -31,7 +30,6 @@ type BoardItemStylesProps = {
   isDragging: boolean
 }
 
-// Create style for board item element
 const BoardItemEl = styled.div<BoardItemStylesProps>`
   padding: 8px;
   background-color: ${(props) => props.isDragging ? '#d3e4ee' : '#fff'};
@@ -51,23 +49,20 @@ export const BoardItem = (props: BoardItemProps) => {
   const classes = useStyles();
   let disableButton = false;
   let display = props.displayButton;
-  console.log(props.dispatch)
-
-  if(props.displayButton == "$"){
+  if(props.displayButton === "$"){
     disableButton = true;
     display = "$ " + props.item.calculatedCost;
   }
   const handleUpdate = (property : any) => {
     let item = property;
-    console.log(item);
-    if(item.status = "In Progress"){
+    console.log(item.status)
+    if(item.status === "In Progress"){
       let finishedAt = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
       let startedAt = moment(item.startedAt).format('YYYY-MM-DD HH:mm:ss');
       item.finishedAt = finishedAt;
       var diffInMinutes = moment(finishedAt).diff(moment(startedAt), 'minutes');
       item.status = "Done";
       item.calculatedCost = (diffInMinutes / 60) * 10;
-      console.log(item);
         updateTask(item).then((response) => {
           const columnStart = (props.state.columns as any)['column-inprogress'];
          
@@ -87,13 +82,13 @@ export const BoardItem = (props: BoardItemProps) => {
            ...columnFinish,
            itemsIds: newFinishItemsIds
          }
-         console.log( props.state.columns);
+         
          props.state.columns =  {
            ...props.state.columns,
            [newColumnStart.id]: newColumnStart,
            [newColumnFinish.id]: newColumnFinish
          }
-         console.log( props.state.columns);
+        
          props.dispatch({
            type: 'setColumns',
            payload:  {
@@ -104,13 +99,14 @@ export const BoardItem = (props: BoardItemProps) => {
          });
         });
     }
-    else if(item.status = "To Do"){
+    else if(item.status === "To Do"){
       let finishedAt = "";
       let startedAt = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
       item.finishedAt = finishedAt;
+      item.startedAt = startedAt;
       item.status = "In Progress";
       item.calculatedCost = 0;
-      console.log(item);
+      
         updateTask(item).then((response) => {
           const columnStart = (props.state.columns as any)['column-todo'];
          
@@ -130,13 +126,13 @@ export const BoardItem = (props: BoardItemProps) => {
            ...columnFinish,
            itemsIds: newFinishItemsIds
          }
-         console.log( props.state.columns);
+         
          props.state.columns =  {
            ...props.state.columns,
            [newColumnStart.id]: newColumnStart,
            [newColumnFinish.id]: newColumnFinish
          }
-         console.log( props.state.columns);
+         
          props.dispatch({
            type: 'setColumns',
            payload:  {
@@ -149,6 +145,24 @@ export const BoardItem = (props: BoardItemProps) => {
     }
    
   };
+
+  function ShowTime(itemProp) {
+    const item = itemProp;
+    console.log(item);
+    if (item.status === "In Progress") {
+      return  <button
+      variant="contained"
+      size="large"
+      color="secondary"
+      className={classes.displayBtn}
+      disabled= "disabled" >
+         {item.startedAt}
+    </button>;
+    } else{
+      return null;
+    }
+    
+  }
   return <Draggable draggableId={props.item._id} index={props.index}>
     {(provided, snapshot) => (
 
@@ -160,6 +174,8 @@ export const BoardItem = (props: BoardItemProps) => {
       >
         {}
         {props.item.task}<p></p>
+        <ShowTime item={props.item} />
+          <p></p>
         <Button
             variant="contained"
             size="large"
