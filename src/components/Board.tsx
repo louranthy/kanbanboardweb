@@ -10,6 +10,8 @@ import  axios from 'axios';
 import { useEffect } from 'react'
 import getTasks from '../services/get.tasks.services'
 import updateTask from '../services/update.tasks.services'
+import createTask from '../services/create.tasks.services'
+import FormDialog from './CreateBoardItemModal'
 
 
 const BoardEl = styled.div`
@@ -18,16 +20,18 @@ const BoardEl = styled.div`
   justify-content: space-between;
 `
 type State = {
-  items : object,
+  items : object
   columns: object
   columnsOrder : Array<string>
+  newTask : string
 }
 
 const initialState:State = initialBoardData;
 
 type Action = { type: 'setColumns', payload: object} |
 {type: 'setColumnStart', payload: Array<string>} |
-{type: 'setItems', payload: object};
+{type: 'setItems', payload: object} |
+{type: 'setNewTask', payload: string};
 
 const reducer = (state: State, action: Action): State => {
   switch (action.type) {
@@ -45,6 +49,11 @@ const reducer = (state: State, action: Action): State => {
       return {
         ...state,
         items: action.payload
+    };
+    case 'setNewTask': 
+      return {
+        ...state,
+        newTask: action.payload
     };
   }
 }
@@ -86,6 +95,26 @@ const Board = () => {
   }) 
   }, []);
 
+  const onCreate = (task: any) => {
+    var item = {
+      "task": task,
+      "startedAt": "08/31/2021 08:10:10",
+      "status": "To Do",
+      "finishedAt": "",
+      "calculatedCost": 0
+    }
+    
+    createTask(item).then((response) => {
+      dispatch({
+        type: 'setColumns',
+        payload:  {
+          ...state.columns,
+          [newColumnStart.id]: newColumnStart,
+          [newColumnFinish.id]: newColumnFinish
+        }
+      });
+    });
+  }
 
   const onDragEnd = (result: any) => {
     const { source, destination, draggableId } = result
@@ -155,11 +184,14 @@ const Board = () => {
           }
         });
       });
+
     }
   }
 
     return(
+     
       <BoardEl>
+        <FormDialog state={state} dispatch={dispatch} addTask={onCreate}/>
         {/* Create context for drag & drop */}
         <DragDropContext onDragEnd={onDragEnd}>
           {/* Get all columns in the order specified in 'board-initial-data.ts' */}
