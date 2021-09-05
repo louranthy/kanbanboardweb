@@ -4,10 +4,14 @@ import * as React from 'react'
 import { DragDropContext } from 'react-beautiful-dnd'
 import styled from 'styled-components'
 import { initialBoardData } from '../data/initialBoardData'
-import { BoardColumn } from './BoardColumn'
+import axios from 'axios';
 import { useEffect } from 'react'
 import getTasks from '../services/get.tasks.services'
 import updateTask from '../services/update.tasks.services'
+import { BoardColumn } from './BoardColumn'
+import TicketModal from './TicketModal'
+import Button from "@material-ui/core/Button";
+
 
 
 const BoardEl = styled.div`
@@ -16,34 +20,34 @@ const BoardEl = styled.div`
   justify-content: space-between;
 `
 type State = {
-  items : object,
+  items: object,
   columns: object
-  columnsOrder : Array<string>
+  columnsOrder: Array<string>
 }
 
-const initialState:State = initialBoardData;
+const initialState: State = initialBoardData;
 
-type Action = { type: 'setColumns', payload: object} |
-{type: 'setColumnStart', payload: Array<string>} |
-{type: 'setItems', payload: object};
+type Action = { type: 'setColumns', payload: object } |
+{ type: 'setColumnStart', payload: Array<string> } |
+{ type: 'setItems', payload: object };
 
 const reducer = (state: State, action: Action): State => {
   switch (action.type) {
-    case 'setColumns': 
+    case 'setColumns':
       return {
         ...state,
         columns: action.payload
       };
-    case 'setColumnStart': 
+    case 'setColumnStart':
       return {
         ...state,
         columns: action.payload
       };
-    case 'setItems': 
+    case 'setItems':
       return {
         ...state,
         items: action.payload
-    };
+      };
   }
 }
 
@@ -51,6 +55,7 @@ const reducer = (state: State, action: Action): State => {
 const Board = () => {
 
   let [state, dispatch] = React.useReducer(reducer, initialState);
+  const [modalOpen, setModalOpen] = React.useState(false);
 
   useEffect(() => {
     getTasks().then((response) => {
@@ -58,30 +63,30 @@ const Board = () => {
       const newObject = {};
       for (const key of Object.keys(response.data)) {
         let newKey = response.data[key]['_id'];
-        delete Object.assign(newObject, response.data, {[newKey]: response.data[key] })[key];
+        delete Object.assign(newObject, response.data, { [newKey]: response.data[key] })[key];
         delete response.data[key];
-    
+
       }
       dispatch({
         type: 'setItems',
         payload: newObject
       })
       for (const key of Object.keys(newObject)) {
-         if(newObject[key]['status'] === "To Do"){
-           columns[0]['column-todo'].itemsIds.push(key);
-         }else if (newObject[key]['status'] === "In Progress"){
-           columns[0]['column-inprogress'].itemsIds.push(key);
-         }else if (newObject[key]['status'] === "Done"){
-           columns[0]['column-done'].itemsIds.push(key);
-         }
+        if (newObject[key]['status'] === "To Do") {
+          columns[0]['column-todo'].itemsIds.push(key);
+        } else if (newObject[key]['status'] === "In Progress") {
+          columns[0]['column-inprogress'].itemsIds.push(key);
+        } else if (newObject[key]['status'] === "Done") {
+          columns[0]['column-done'].itemsIds.push(key);
+        }
       }
-     
-        dispatch({
-          type: 'setColumns',
-          payload: columns[0]
-        })
 
-  }) 
+      dispatch({
+        type: 'setColumns',
+        payload: columns[0]
+      })
+
+    })
   }, []);
 
 
@@ -100,7 +105,7 @@ const Board = () => {
     if (columnStart === columnFinish) {
       const newItemsIds = Array.from(columnStart.itemsIds)
       newItemsIds.splice(source.index, 1)
-      newItemsIds.splice(destination.index, 0, draggableId)   
+      newItemsIds.splice(destination.index, 0, draggableId)
       const newColumnStart = {
         ...columnStart,
         itemsIds: newItemsIds
@@ -108,14 +113,14 @@ const Board = () => {
 
       dispatch({
         type: 'setColumns',
-        payload:  {
+        payload: {
           ...state.columns,
           [newColumnStart.id]: newColumnStart
         }
       });
 
     } else {
- 
+
       const newStartItemsIds = Array.from(columnStart.itemsIds)
       newStartItemsIds.splice(source.index, 1)
 
@@ -123,10 +128,10 @@ const Board = () => {
         ...columnStart,
         itemsIds: newStartItemsIds
       }
-      
+
       let items = state.items;
       let column = (state.columns as any)[destination.droppableId];
-  
+
       items[draggableId].status = column.title;
       let item = items[draggableId];
 
@@ -142,11 +147,11 @@ const Board = () => {
       updateTask(item).then((response) => {
         dispatch({
           type: 'setItems',
-          payload:  items
+          payload: items
         });
         dispatch({
           type: 'setColumns',
-          payload:  {
+          payload: {
             ...state.columns,
             [newColumnStart.id]: newColumnStart,
             [newColumnFinish.id]: newColumnFinish
@@ -156,7 +161,21 @@ const Board = () => {
     }
   }
 
-    return(
+  const handleOpen = () => {
+    setModalOpen(true);
+  };
+
+  const handleClose = () => {
+    setModalOpen(false);
+  };
+
+  return (
+    <div>
+      <Button variant="contained" color="primary" onClick={handleOpen}>
+        Create Ticket
+      </Button>
+      <TicketModal open={modalOpen} handleClose={handleClose} />
+
       <BoardEl>
         {/* Create context for drag & drop */}
         <DragDropContext onDragEnd={onDragEnd}>
@@ -165,11 +184,13 @@ const Board = () => {
             const column = (state.columns as any)[columnId]
 
             const items = column.itemsIds.map((itemId: string) => (state.items as any)[itemId])
-            return <BoardColumn key={column.id} column={column} items={items} state={state} dispatch={dispatch}/>
+            return <BoardColumn key={column.id} column={column} items={items} state={state} dispatch={dispatch} />
           })}
         </DragDropContext>
       </BoardEl>
-    )
+
+    </div>
+  )
 }
 
 
