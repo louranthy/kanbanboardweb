@@ -9,7 +9,7 @@ import getTasks from '../services/get.tasks.services'
 import updateTask from '../services/update.tasks.services'
 import createTask from '../services/create.tasks.services'
 import FormDialog from './CreateBoardItemModal'
-=======
+
 import { BoardColumn } from './BoardColumn'
 import TicketModal from './TicketModal'
 import Button from "@material-ui/core/Button";
@@ -25,15 +25,15 @@ type State = {
   items: object,
   columns: object
   columnsOrder: Array<string>
->>>>>>> 51746b39dafb3aa110cbda4519c7d9c5128215cd
+  newTask : string
 }
 
 const initialState: State = initialBoardData;
 
 type Action = { type: 'setColumns', payload: object } |
 { type: 'setColumnStart', payload: Array<string> } |
-{ type: 'setItems', payload: object };
->>>>>>> 51746b39dafb3aa110cbda4519c7d9c5128215cd
+{ type: 'setItems', payload: object } |
+{type: 'setNewTask', payload: string};
 
 const reducer = (state: State, action: Action): State => {
   switch (action.type) {
@@ -51,8 +51,7 @@ const reducer = (state: State, action: Action): State => {
       return {
         ...state,
         items: action.payload
-<<<<<<< HEAD
-    };
+      };
     case 'setNewTask': 
       return {
         ...state,
@@ -192,10 +191,7 @@ const Board = () => {
     }
   }
 
-<<<<<<< HEAD
-    return(
-     
-=======
+
   const handleOpen = () => {
     setModalOpen(true);
   };
@@ -206,14 +202,9 @@ const Board = () => {
 
   return (
     <div>
-      <Button variant="contained" color="primary" onClick={handleOpen}>
-        Create Ticket
-      </Button>
-      <TicketModal open={modalOpen} handleClose={handleClose} />
-
->>>>>>> 51746b39dafb3aa110cbda4519c7d9c5128215cd
+     <FormDialog state={state} dispatch={dispatch} addTask={onCreate}/>
       <BoardEl>
-        <FormDialog state={state} dispatch={dispatch} addTask={onCreate}/>
+      
         {/* Create context for drag & drop */}
         <DragDropContext onDragEnd={onDragEnd}>
           {/* Get all columns in the order specified in 'board-initial-data.ts' */}
